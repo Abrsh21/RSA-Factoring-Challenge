@@ -1,45 +1,61 @@
-"""This module contains helper functions for all the other modules used in this
-    project
-"""
+#!/usr/bin/python3
+from random import randint
 
-def product(lst):
-    """ Return product of all numbers in a list
-    """
-    prod = 1
-    for _ in lst:
-        prod *= _
-    return prod
 
-def gcd(p, q):
-    """ Returns the greatest common divisor of the two numbers
-    """
-    while q:
-        p, q = q, p % q
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
     return a
 
-def kth_iroot(n, k):
-    """ Return the integer k-th root of a number by Newton's method
-    """
-    u = n
-    s = n + 1
-    while u < s:
-        s = u
-        t = (k - 1) * s + n // pow(s, k - 1)
-        u = t // k
-    return s
 
-def isqrt(n):
-    """ Return the square root of a number rounded down to the closest integer
-    """
-    if n < 0:
-        raise ValueError("Square root of negative number!")
-    x = int(n)
-    if n == 0:
-        return 0
-    p, q = divmod(x.bit_length(), 2)
-    n = 2 ** (p + q)
-    while True:
-        y = (n + x // n) // 2
-        if y >= x:
-            return x
+def _pollard_brent(c, n, x):
+    y = (x ** 2) % n + c
+    if y >= n:
+        y -= n
+
+    assert 0 <= y < n
+    return y
+
+
+def factorise_b(n, iterations=None):
+    y, c, m = (randint(1, n - 1) for w in range(3))
+    r, q, g = 1, 1, 1
+    i = 0
+    while g == 1:
         x = y
+        for w in range(r):
+            y = _pollard_brent(c, n, y)
+        k = 0
+        while k < r and g == 1:
+            ys = y
+            for _ in range(min(m, r - k)):
+                y = _pollard_brent(c, n, y)
+                q = (q * abs(x - y)) %  n
+            g = gcd(q, n)
+            k += m
+        r *= 2
+        if iterations:
+            i += 1
+            if i == iterations:
+                return None
+
+    if g == n:
+        while True:
+            ys = _pollard_brent(c, n, ys)
+            g = gcd(abs(x - ys), n)
+            if g > 1:
+                break
+    return g
+
+
+if __name__ == '__main__':
+    from sys import argv
+
+    if len(argv) != 2:
+        exit(1)
+
+    with open(argv[1], "r") as f:
+        for i in f:
+            n = int(i[:-1])
+            res = factorise_b(n)
+            print("{}={}*{}".format(n, n // res, res))
