@@ -10,11 +10,11 @@ def product(lst):
         prod *= _
     return prod
 
-def gcd(a, b):
+def gcd(p, q):
     """ Returns the greatest common divisor of the two numbers
     """
-    while b:
-        a, b = b, a % b
+    while q:
+        p, q = q, p % q
     return a
 
 def kth_iroot(n, k):
@@ -36,8 +36,8 @@ def isqrt(n):
     x = int(n)
     if n == 0:
         return 0
-    a, b = divmod(x.bit_length(), 2)
-    n = 2 ** (a + b)
+    p, q = divmod(x.bit_length(), 2)
+    n = 2 ** (p + q)
     while True:
         y = (n + x // n) // 2
         if y >= x:
