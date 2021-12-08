@@ -1,27 +1,36 @@
 #!/usr/bin/python3
-import sys
+from sys import argv
+import math
+"""Factorize as many numbers as possible into a product of 2 smaller nums"""
 
 
-def factor():
-    try:
-        revfile = sys.argv[1]
-        with open(revfile) as f:
-            for revnumber in f:
-                revnumber = int(revnumber)
-                if revnumber % 2 == 0:
-                    print("{}={}*{}".format(revnumber, revnumber // 2, 2))
-                    continue
-                i = 3
-        while i < revnumber // 2:
-                            if revnumber % i == 0:
-                                print("{}={}*{}".format(revnumber, revnumber // i, i))
-                                break
-                            i = i + 2
-                            if i == (revnumber // 2) + 1:
-                                print("{}={}*{}".format(revnumber, revnumber, 1))
-    except(IndexError):
-        pass
+def factory(num):
+    """gets the factors of a number"""
+    if num % 2 == 0:
+        i = 2
+        print("{}={}*{}".format(num, int(num//i), i))
+    else:
+        sq = int(math.sqrt(num)) + 1
+        for i in range(3, sq, +2):
+            if num % i == 0:
+                print("{}={}*{}".format(num, int(num//i), i))
+                return
+            if num % (sq + i) == 0:
+                print("{}={}*{}".format(num, sq + i, int(num//(sq + i))))
+                return
+            if num % (sq - i) == 0:
+                print("{}={}*{}".format(num, sq - 1, int(num//(sq - i))))
+                return
+
+
+def factors(filename):
+    """read_file and prints them out"""
+
+    with open(filename, encoding="utf-8") as my_file:
+        for i in my_file.readlines():
+            n = int(i)
+            result = factory(n)
 
 
 if __name__ == "__main__":
-    	factor()
+    factors(argv[1])
